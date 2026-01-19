@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Finder</title>
+    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-search"></i> Video Finder</h1>
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="current-movie" id="currentMovie">
+            <div class="loading" id="movieLoading">
+                <div class="spinner"></div>
+                <p>Анализирую текущую страницу...</p>
+            </div>
+        </div>
+
+        <div class="filters-section">
+            <h3><i class="fas fa-filter"></i> Фильтры поиска</h3>
+            
+            <div class="filter-group">
+                <label for="quality"><i class="fas fa-hd"></i> Качество:</label>
+                <select id="quality" class="filter-select">
+                    <option value="">Любое</option>
+                    <option value="480">SD (480p)</option>
+                    <option value="720" selected>HD (720p)</option>
+                    <option value="1080">FullHD (1080p)</option>
+                    <option value="2160">4K (2160p)</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="dubbing"><i class="fas fa-microphone"></i> Озвучка:</label>
+                <select id="dubbing" class="filter-select">
+                    <option value="">Любая</option>
+                    <option value="professional">Профессиональная</option>
+                    <option value="amateur">Любительская</option>
+                    <option value="original" selected>Оригинал</option>
+                    <option value="subtitles">Субтитры</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="language"><i class="fas fa-language"></i> Язык:</label>
+                <select id="language" class="filter-select">
+                    <option value="ru">Русский</option>
+                    <option value="en">Английский</option>
+                    <option value="jp">Японский</option>
+                    <option value="multi">Мультиязычный</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="manual-search">
+            <h3><i class="fas fa-keyboard"></i> Ручной поиск</h3>
+            <div class="search-input">
+                <input type="text" id="movieTitle" placeholder="Введите название фильма/сериала">
+                <input type="number" id="movieYear" placeholder="Год (опционально)">
+                <button id="searchBtn" class="btn-primary">
+                    <i class="fas fa-search"></i> Найти
+                </button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h3><i class="fas fa-list"></i> Результаты</h3>
+            <div class="results-container" id="resultsContainer">
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-film"></i>
+                    <p>Выберите фильм и настройте фильтры для поиска</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <button id="settingsBtn" class="btn-secondary">
+                <i class="fas fa-cog"></i> Настройки
+            </button>
+            <div class="version">v1.0.0</div>
+        </div>
+    </div>
+
+    <!-- Шаблон для результата -->
+    <template id="resultTemplate">
+        <div class="result-card">
+            <div class="result-header">
+                <span class="source-badge" data-source="source">Source</span>
+                <div class="quality-badge" data-quality="quality">720p</div>
+            </div>
+            <div class="result-thumbnail">
+                <img src="" alt="Превью" class="thumbnail">
+                <div class="overlay">
+                    <button class="play-btn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="result-info">
+                <h4 class="result-title">Название</h4>
+                <div class="result-details">
+                    <span class="detail"><i class="fas fa-microphone"></i> <span class="dubbing">Озвучка</span></span>
+                    <span class="detail"><i class="fas fa-language"></i> <span class="language">Язык</span></span>
+                    <span class="detail"><i class="fas fa-calendar"></i> <span class="year">2023</span></span>
+                </div>
+                <div class="result-actions">
+                    <button class="btn-visit">
+                        <i class="fas fa-external-link-alt"></i> Перейти
+                    </button>
+                    <button class="btn-copy">
+                        <i class="far fa-copy"></i> Копировать
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="popup.js"></script>
+</body>
+</html>
