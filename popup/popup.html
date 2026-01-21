@@ -4,122 +4,288 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Finder</title>
+    <link rel="stylesheet" href="../assets/styles/variables.css">
+    <link rel="stylesheet" href="../assets/styles/base.css">
+    <link rel="stylesheet" href="../assets/styles/components.css">
     <link rel="stylesheet" href="popup.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-search"></i> Video Finder</h1>
-            <div class="status" id="status"></div>
-        </div>
-
-        <div class="current-movie" id="currentMovie">
-            <div class="loading" id="movieLoading">
-                <div class="spinner"></div>
-                <p>Анализирую текущую страницу...</p>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fas fa-search"></i>
+                <h1>Video Finder</h1>
+                <span class="version">v1.0.0</span>
             </div>
-        </div>
-
-        <div class="filters-section">
-            <h3><i class="fas fa-filter"></i> Фильтры поиска</h3>
-            
-            <div class="filter-group">
-                <label for="quality"><i class="fas fa-hd"></i> Качество:</label>
-                <select id="quality" class="filter-select">
-                    <option value="">Любое</option>
-                    <option value="480">SD (480p)</option>
-                    <option value="720" selected>HD (720p)</option>
-                    <option value="1080">FullHD (1080p)</option>
-                    <option value="2160">4K (2160p)</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="dubbing"><i class="fas fa-microphone"></i> Озвучка:</label>
-                <select id="dubbing" class="filter-select">
-                    <option value="">Любая</option>
-                    <option value="professional">Профессиональная</option>
-                    <option value="amateur">Любительская</option>
-                    <option value="original" selected>Оригинал</option>
-                    <option value="subtitles">Субтитры</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="language"><i class="fas fa-language"></i> Язык:</label>
-                <select id="language" class="filter-select">
-                    <option value="ru">Русский</option>
-                    <option value="en">Английский</option>
-                    <option value="jp">Японский</option>
-                    <option value="multi">Мультиязычный</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="manual-search">
-            <h3><i class="fas fa-keyboard"></i> Ручной поиск</h3>
-            <div class="search-input">
-                <input type="text" id="movieTitle" placeholder="Введите название фильма/сериала">
-                <input type="number" id="movieYear" placeholder="Год (опционально)">
-                <button id="searchBtn" class="btn-primary">
-                    <i class="fas fa-search"></i> Найти
+            <div class="header-actions">
+                <button class="btn-icon" id="settingsBtn" title="Настройки">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="btn-icon" id="historyBtn" title="История поиска">
+                    <i class="fas fa-history"></i>
+                </button>
+                <button class="btn-icon" id="refreshBtn" title="Обновить">
+                    <i class="fas fa-sync-alt"></i>
                 </button>
             </div>
-        </div>
+        </header>
 
-        <div class="results-section">
-            <h3><i class="fas fa-list"></i> Результаты</h3>
-            <div class="results-container" id="resultsContainer">
-                <div class="empty-state" id="emptyState">
-                    <i class="fas fa-film"></i>
-                    <p>Выберите фильм и настройте фильтры для поиска</p>
+        <!-- Current Movie Section -->
+        <section class="section current-movie-section" id="currentMovieSection">
+            <h2 class="section-title">
+                <i class="fas fa-film"></i> Текущий фильм
+                <span class="loading-indicator" id="movieLoading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </span>
+            </h2>
+            <div class="current-movie-card" id="currentMovieCard">
+                <div class="empty-state">
+                    <i class="fas fa-mouse-pointer"></i>
+                    <p>Перейдите на страницу фильма или введите название вручную</p>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div class="footer">
-            <button id="settingsBtn" class="btn-secondary">
-                <i class="fas fa-cog"></i> Настройки
-            </button>
-            <div class="version">v1.0.0</div>
-        </div>
+        <!-- Filters Section -->
+        <section class="section filters-section">
+            <h2 class="section-title">
+                <i class="fas fa-filter"></i> Фильтры
+                <button class="btn-text" id="resetFiltersBtn">Сбросить</button>
+            </h2>
+            
+            <div class="filters-grid">
+                <!-- Quality Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-hd"></i> Качество
+                    </label>
+                    <div class="filter-options quality-options">
+                        <button class="filter-chip active" data-quality="">Все</button>
+                        <button class="filter-chip" data-quality="480">SD</button>
+                        <button class="filter-chip" data-quality="720">HD</button>
+                        <button class="filter-chip" data-quality="1080">FullHD</button>
+                        <button class="filter-chip" data-quality="2160">4K</button>
+                    </div>
+                </div>
+
+                <!-- Dubbing Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-microphone"></i> Озвучка
+                    </label>
+                    <div class="filter-options dubbing-options">
+                        <button class="filter-chip active" data-dubbing="">Все</button>
+                        <button class="filter-chip" data-dubbing="professional">Проф.</button>
+                        <button class="filter-chip" data-dubbing="amateur">Любит.</button>
+                        <button class="filter-chip" data-dubbing="original">Оригинал</button>
+                        <button class="filter-chip" data-dubbing="subtitles">Субтитры</button>
+                    </div>
+                </div>
+
+                <!-- Language Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-language"></i> Язык
+                    </label>
+                    <select class="filter-select" id="languageSelect">
+                        <option value="ru">Русский</option>
+                        <option value="en">Английский</option>
+                        <option value="multi">Мультиязычный</option>
+                        <option value="any">Любой</option>
+                    </select>
+                </div>
+
+                <!-- Source Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-globe"></i> Источники
+                    </label>
+                    <div class="filter-options source-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="source-checkbox" value="filmix" checked>
+                            <span>Filmix</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="source-checkbox" value="hdrezka" checked>
+                            <span>HDRezka</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="source-checkbox" value="kinopub" checked>
+                            <span>KinoPub</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Manual Search -->
+        <section class="section search-section">
+            <h2 class="section-title">
+                <i class="fas fa-search"></i> Поиск
+            </h2>
+            <div class="search-form">
+                <div class="search-input-group">
+                    <input type="text" 
+                           id="movieTitleInput" 
+                           class="search-input"
+                           placeholder="Название фильма, сериала или аниме..."
+                           autocomplete="off">
+                    <div class="search-suggestions" id="searchSuggestions"></div>
+                </div>
+                <div class="search-options">
+                    <input type="number" 
+                           id="movieYearInput" 
+                           class="year-input"
+                           placeholder="Год"
+                           min="1900" max="2030">
+                    <select id="movieTypeSelect" class="type-select">
+                        <option value="">Все типы</option>
+                        <option value="movie">Фильм</option>
+                        <option value="series">Сериал</option>
+                        <option value="anime">Аниме</option>
+                    </select>
+                    <button class="btn-primary" id="searchButton">
+                        <i class="fas fa-search"></i> Найти
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="section results-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-list"></i> Результаты
+                    <span class="results-count" id="resultsCount">0</span>
+                </h2>
+                <div class="view-controls">
+                    <button class="btn-icon view-btn active" data-view="grid" title="Сетка">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="btn-icon view-btn" data-view="list" title="Список">
+                        <i class="fas fa-list"></i>
+                    </button>
+                    <button class="btn-icon view-btn" data-view="compact" title="Компактно">
+                        <i class="fas fa-grip-horizontal"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="results-container grid-view" id="resultsContainer">
+                <div class="empty-state" id="emptyResults">
+                    <i class="fas fa-film"></i>
+                    <h3>Нет результатов</h3>
+                    <p>Настройте фильтры и выполните поиск</p>
+                </div>
+            </div>
+
+            <div class="results-footer">
+                <div class="pagination" id="pagination">
+                    <button class="btn-pagination prev" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="page-info">Страница 1</span>
+                    <button class="btn-pagination next" disabled>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="results-stats" id="resultsStats">
+                    Найдено 0 вариантов
+                </div>
+            </div>
+        </section>
+
+        <!-- Status Bar -->
+        <footer class="app-footer">
+            <div class="status-bar">
+                <span class="status-text" id="statusText">Готово</span>
+                <div class="connection-status" id="connectionStatus">
+                    <i class="fas fa-wifi"></i>
+                    <span>Онлайн</span>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <!-- Шаблон для результата -->
-    <template id="resultTemplate">
-        <div class="result-card">
-            <div class="result-header">
-                <span class="source-badge" data-source="source">Source</span>
-                <div class="quality-badge" data-quality="quality">720p</div>
-            </div>
-            <div class="result-thumbnail">
-                <img src="" alt="Превью" class="thumbnail">
-                <div class="overlay">
-                    <button class="play-btn">
-                        <i class="fas fa-play"></i>
-                    </button>
+    <!-- Templates -->
+    <template id="movieTemplate">
+        <div class="movie-card">
+            <div class="movie-poster">
+                <img src="" alt="Постер" class="poster-image">
+                <div class="movie-badges">
+                    <span class="badge quality"></span>
+                    <span class="badge type"></span>
                 </div>
             </div>
-            <div class="result-info">
-                <h4 class="result-title">Название</h4>
-                <div class="result-details">
-                    <span class="detail"><i class="fas fa-microphone"></i> <span class="dubbing">Озвучка</span></span>
-                    <span class="detail"><i class="fas fa-language"></i> <span class="language">Язык</span></span>
-                    <span class="detail"><i class="fas fa-calendar"></i> <span class="year">2023</span></span>
+            <div class="movie-info">
+                <h3 class="movie-title"></h3>
+                <div class="movie-meta">
+                    <span class="meta-item year"></span>
+                    <span class="meta-item rating">
+                        <i class="fas fa-star"></i>
+                        <span class="rating-value"></span>
+                    </span>
                 </div>
-                <div class="result-actions">
-                    <button class="btn-visit">
-                        <i class="fas fa-external-link-alt"></i> Перейти
+                <div class="movie-sources">
+                    <span class="sources-count">
+                        <i class="fas fa-link"></i>
+                        <span class="count"></span> источников
+                    </span>
+                </div>
+                <div class="movie-actions">
+                    <button class="btn-action view-sources">
+                        <i class="fas fa-eye"></i> Показать
                     </button>
-                    <button class="btn-copy">
-                        <i class="far fa-copy"></i> Копировать
+                    <button class="btn-action favorite">
+                        <i class="far fa-heart"></i>
                     </button>
                 </div>
             </div>
         </div>
     </template>
 
-    <script src="popup.js"></script>
+    <template id="sourceTemplate">
+        <div class="source-card">
+            <div class="source-header">
+                <span class="source-name"></span>
+                <div class="source-meta">
+                    <span class="meta-item quality"></span>
+                    <span class="meta-item dubbing"></span>
+                </div>
+            </div>
+            <div class="source-body">
+                <div class="source-info">
+                    <div class="info-row">
+                        <i class="fas fa-language"></i>
+                        <span class="language"></span>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-clock"></i>
+                        <span class="duration"></span>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span class="rating"></span>
+                    </div>
+                </div>
+                <div class="source-actions">
+                    <button class="btn-primary watch-btn">
+                        <i class="fas fa-play"></i> Смотреть
+                    </button>
+                    <button class="btn-secondary copy-btn">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script type="module" src="../utils/storage.js"></script>
+    <script type="module" src="../utils/api.js"></script>
+    <script type="module" src="../utils/constants.js"></script>
+    <script type="module" src="popup.js"></script>
 </body>
 </html>

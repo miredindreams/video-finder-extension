@@ -1,51 +1,115 @@
 {
   "manifest_version": 3,
-  "name": "Video Finder",
+  "name": "__MSG_appName__",
+  "short_name": "Video Finder",
   "version": "1.0.0",
-  "description": "Находит альтернативные источники для просмотра видео с нужным качеством и озвучкой",
+  "version_name": "1.0.0",
+  "description": "__MSG_appDescription__",
+  "default_locale": "ru",
+  
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  
+  "action": {
+    "default_title": "__MSG_actionTitle__",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "32": "assets/icons/icon32.png"
+    }
+  },
+  
+  "options_page": "options/options.html",
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  
   "permissions": [
     "activeTab",
     "storage",
     "scripting",
-    "tabs"
+    "notifications",
+    "alarms"
   ],
+  
   "host_permissions": [
+    "*://*.kinopoisk.ru/*",
+    "*://*.kinopoisk.dev/*",
+    "*://*.imdb.com/*",
+    "*://*.myanimelist.net/*",
+    "*://*.anidub.com/*",
+    "*://*.animejoy.ru/*",
     "https://api.kinopoisk.dev/*",
-    "https://imdb-api.com/*",
     "https://www.omdbapi.com/*",
-    "https://your-backend-api.com/*" //ЗАМЕНИТЬ
+    "https://your-backend-api.com/*"  // Замените на ваш сервер
   ],
-  "action": {
-    "default_popup": "popup/popup.html",
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    }
-  },
+  
   "content_scripts": [
     {
       "matches": [
         "*://*.kinopoisk.ru/*",
-        "*://*.kinopoisk.dev/*",
-        "*://*.imdb.com/*",
-        "*://*.myanimelist.net/*"
+        "*://*.kinopoisk.dev/*"
       ],
-      "js": ["content/content.js"],
-      "css": ["assets/styles.css"],
+      "js": [
+        "content/kinopoisk.js",
+        "content/content.js"
+      ],
+      "css": ["assets/styles/base.css"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["*://*.imdb.com/*"],
+      "js": ["content/imdb.js", "content/content.js"],
+      "css": ["assets/styles/base.css"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["*://*.myanimelist.net/*"],
+      "js": ["content/myanimelist.js", "content/content.js"],
+      "css": ["assets/styles/base.css"],
       "run_at": "document_end"
     }
   ],
+  
   "background": {
-    "service_worker": "background/background.js"
+    "service_worker": "background/background.js",
+    "type": "module"
   },
+  
   "web_accessible_resources": [{
-    "resources": ["assets/*"],
+    "resources": [
+      "assets/*",
+      "fonts/*",
+      "images/*"
+    ],
     "matches": ["<all_urls>"]
   }],
-  "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
-  }
+  
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.kinopoisk.dev https://www.omdbapi.com https://your-backend-api.com"
+  },
+  
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
+      },
+      "description": "Открыть поиск Video Finder"
+    },
+    "quick_search": {
+      "suggested_key": {
+        "default": "Alt+Shift+F",
+        "mac": "Alt+Shift+F"
+      },
+      "description": "Быстрый поиск фильма"
+    }
+  },
+  
+  "minimum_chrome_version": "88"
 }
