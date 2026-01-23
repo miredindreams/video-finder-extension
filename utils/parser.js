@@ -1,10 +1,8 @@
 import Helpers from './helpers.js';
 
 class Parser {
-  // Парсинг страницы Кинопоиска
   static parseKinopoisk(document) {
     try {
-      // Название
       let title = '';
       const titleElement = document.querySelector('[data-testid="hero-title-block__title"]') ||
                          document.querySelector('h1') ||
@@ -14,7 +12,6 @@ class Parser {
         title = titleElement.textContent.trim();
       }
       
-      // Оригинальное название
       let originalTitle = '';
       const originalTitleElement = document.querySelector('[data-testid="hero-title-block__original-title"]') ||
                                  document.querySelector('.styles_originalTitle');
@@ -23,7 +20,6 @@ class Parser {
         originalTitle = originalTitleElement.textContent.trim();
       }
       
-      // Год
       let year = null;
       const yearElement = document.querySelector('a[href*="/lists/movies/"]') ||
                          document.querySelector('.styles_year') ||
@@ -34,14 +30,12 @@ class Parser {
         if (yearMatch) year = parseInt(yearMatch[0]);
       }
       
-      // ID Кинопоиска из URL
       let kinopoiskId = null;
       const pathMatch = window.location.pathname.match(/\/film\/(\d+)/);
       if (pathMatch) {
         kinopoiskId = parseInt(pathMatch[1]);
       }
       
-      // Постер
       let posterUrl = '';
       const posterElement = document.querySelector('[data-testid="hero-media__poster"] img') ||
                            document.querySelector('.film-poster img') ||
@@ -51,7 +45,6 @@ class Parser {
         posterUrl = posterElement.src;
       }
       
-      // Рейтинг
       let rating = null;
       const ratingElement = document.querySelector('[data-testid="hero-rating-bar__aggregate-rating"]') ||
                            document.querySelector('.film-rating-value');
@@ -61,7 +54,6 @@ class Parser {
         if (ratingMatch) rating = parseFloat(ratingMatch[0]);
       }
       
-      // Тип (фильм/сериал)
       let type = 'movie';
       const url = window.location.href.toLowerCase();
       const titleText = document.title.toLowerCase();
@@ -70,7 +62,6 @@ class Parser {
         type = 'series';
       }
       
-      // Описание
       let description = '';
       const descriptionElement = document.querySelector('[data-testid="plot"] span') ||
                                document.querySelector('.styles_synopsis');
@@ -79,7 +70,6 @@ class Parser {
         description = descriptionElement.textContent.trim();
       }
       
-      // Жанры
       const genres = [];
       const genreElements = document.querySelectorAll('[data-testid="genres"] a, .styles_genres a');
       genreElements.forEach(el => {
@@ -87,15 +77,13 @@ class Parser {
         if (genre) genres.push(genre);
       });
       
-      // Страны
       const countries = [];
       const countryElements = document.querySelectorAll('[data-testid="country"] a, .styles_country a');
       countryElements.forEach(el => {
         const country = el.textContent.trim();
         if (country) countries.push(country);
       });
-      
-      // Длительность
+
       let duration = null;
       const durationElement = document.querySelector('[data-testid="duration"]');
       if (durationElement) {
@@ -131,10 +119,8 @@ class Parser {
     }
   }
   
-  // Парсинг страницы IMDb
   static parseIMDb(document) {
     try {
-      // Название
       let title = '';
       const titleElement = document.querySelector('h1') ||
                          document.querySelector('[data-testid="hero-title-block__title"]');
@@ -143,7 +129,6 @@ class Parser {
         title = titleElement.textContent.trim();
       }
       
-      // Год
       let year = null;
       const yearElement = document.querySelector('[data-testid="hero-title-block__metadata"]') ||
                          document.querySelector('.sc-8c396aa2-2');
@@ -153,14 +138,12 @@ class Parser {
         if (yearMatch) year = parseInt(yearMatch[0]);
       }
       
-      // ID IMDb из URL
       let imdbId = null;
       const pathMatch = window.location.pathname.match(/\/title\/(tt\d+)/);
       if (pathMatch) {
         imdbId = pathMatch[1];
       }
       
-      // Постер
       let posterUrl = '';
       const posterElement = document.querySelector('[data-testid="hero-media__poster"] img') ||
                            document.querySelector('img[alt*="Poster"]');
@@ -169,7 +152,6 @@ class Parser {
         posterUrl = posterElement.src;
       }
       
-      // Рейтинг
       let rating = null;
       const ratingElement = document.querySelector('[data-testid="hero-rating-bar__aggregate-rating"]') ||
                            document.querySelector('.sc-7ab21ed2-1');
@@ -179,14 +161,12 @@ class Parser {
         if (ratingMatch) rating = parseFloat(ratingMatch[0]);
       }
       
-      // Тип
       let type = 'movie';
       const url = window.location.href.toLowerCase();
       if (url.includes('/tv/')) {
         type = 'series';
       }
       
-      // Описание
       let description = '';
       const descriptionElement = document.querySelector('[data-testid="plot"] span');
       if (descriptionElement) {
@@ -211,10 +191,8 @@ class Parser {
     }
   }
   
-  // Парсинг страницы MyAnimeList
   static parseMyAnimeList(document) {
     try {
-      // Название
       let title = '';
       const titleElement = document.querySelector('h1.title-name') ||
                          document.querySelector('.h1-title');
@@ -223,14 +201,12 @@ class Parser {
         title = titleElement.textContent.trim();
       }
       
-      // Английское название
       let englishTitle = '';
       const englishTitleElement = document.querySelector('span[itemprop="alternativeHeadline"]');
       if (englishTitleElement) {
         englishTitle = englishTitleElement.textContent.trim();
       }
       
-      // Год
       let year = null;
       const yearElement = document.querySelector('span[itemprop="startDate"]');
       if (yearElement) {
@@ -238,31 +214,26 @@ class Parser {
         if (yearMatch) year = parseInt(yearMatch[0]);
       }
       
-      // Постер
       let posterUrl = '';
       const posterElement = document.querySelector('img[itemprop="image"]');
       if (posterElement && posterElement.src) {
         posterUrl = posterElement.src;
       }
       
-      // Рейтинг
       let rating = null;
       const ratingElement = document.querySelector('[itemprop="ratingValue"]');
       if (ratingElement) {
         rating = parseFloat(ratingElement.textContent.trim());
       }
       
-      // Тип (аниме)
       const type = 'anime';
       
-      // Описание
       let description = '';
       const descriptionElement = document.querySelector('[itemprop="description"]');
       if (descriptionElement) {
         description = descriptionElement.textContent.trim();
       }
       
-      // Жанры
       const genres = [];
       const genreElements = document.querySelectorAll('span[itemprop="genre"]');
       genreElements.forEach(el => {
@@ -289,7 +260,6 @@ class Parser {
     }
   }
   
-  // Автоматическое определение и парсинг текущей страницы
   static parseCurrentPage(document) {
     const url = window.location.href.toLowerCase();
     
@@ -304,7 +274,6 @@ class Parser {
     return null;
   }
   
-  // Парсинг ответа от API поиска
   static parseSearchResults(data) {
     if (!data || !Array.isArray(data)) {
       return [];
@@ -326,36 +295,30 @@ class Parser {
     }));
   }
   
-  // Фильтрация источников по параметрам
   static filterSources(sources, filters) {
     if (!sources || !Array.isArray(sources)) {
       return [];
     }
     
     return sources.filter(source => {
-      // Фильтр по качеству
       if (filters.quality && source.quality !== filters.quality) {
         return false;
       }
       
-      // Фильтр по озвучке
       if (filters.dubbing && source.audioType !== filters.dubbing) {
         return false;
       }
       
-      // Фильтр по языку
       if (filters.language && source.audioLanguage !== filters.language) {
         return false;
       }
       
-      // Фильтр по источникам (сайтам)
       if (filters.sources && filters.sources.length > 0) {
         if (!filters.sources.includes(source.websiteName)) {
           return false;
         }
       }
       
-      // Фильтр по активности
       if (!source.isActive) {
         return false;
       }
@@ -364,7 +327,6 @@ class Parser {
     });
   }
   
-  // Группировка источников по качеству
   static groupByQuality(sources) {
     if (!sources) return {};
     
@@ -378,7 +340,6 @@ class Parser {
       groups[quality].push(source);
     });
     
-    // Сортируем группы по качеству (от лучшего к худшему)
     const qualityOrder = ['2160', '1440', '1080', '720', '480', '360', 'unknown'];
     
     return Object.keys(groups)

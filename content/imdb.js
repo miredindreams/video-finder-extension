@@ -1,4 +1,3 @@
-// Парсер для IMDb
 class IMDbParser {
   constructor() {
     this.name = 'imdb';
@@ -118,7 +117,6 @@ class IMDbParser {
   }
   
   getType() {
-    // IMDb не показывает тип явно, но можно определить по URL
     const url = window.location.href.toLowerCase();
     if (url.includes('/tv/')) {
       return 'series';
@@ -127,7 +125,6 @@ class IMDbParser {
   }
   
   injectUI() {
-    // Добавляем кнопку Video Finder на страницу IMDb
     if (document.getElementById('video-finder-button')) return;
     
     const button = document.createElement('button');
@@ -184,18 +181,15 @@ class IMDbParser {
     const movieData = this.parse();
     
     if (movieData.success) {
-      // Отправляем данные в background script
       chrome.runtime.sendMessage({
         action: 'MOVIE_PARSED',
         data: movieData.data
       });
-      
-      // Также сохраняем в localStorage для быстрого доступа
+
       localStorage.setItem('video-finder-current-movie', JSON.stringify(movieData.data));
     }
   }
   
-  // Автоматический запуск при изменениях на странице
   observeChanges() {
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -213,7 +207,6 @@ class IMDbParser {
   }
 }
 
-// Автоматический запуск парсера
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     new IMDbParser();
@@ -222,7 +215,6 @@ if (document.readyState === 'loading') {
   new IMDbParser();
 }
 
-// Экспорт для использования в content.js
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = IMDbParser;
 }

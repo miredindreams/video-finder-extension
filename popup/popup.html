@@ -12,7 +12,6 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
         <header class="app-header">
             <div class="logo">
                 <i class="fas fa-search"></i>
@@ -32,7 +31,6 @@
             </div>
         </header>
 
-        <!-- Current Movie Section -->
         <section class="section current-movie-section" id="currentMovieSection">
             <h2 class="section-title">
                 <i class="fas fa-film"></i> Текущий фильм
@@ -48,7 +46,6 @@
             </div>
         </section>
 
-        <!-- Filters Section -->
         <section class="section filters-section">
             <h2 class="section-title">
                 <i class="fas fa-filter"></i> Фильтры
@@ -56,7 +53,6 @@
             </h2>
             
             <div class="filters-grid">
-                <!-- Quality Filter -->
                 <div class="filter-group">
                     <label class="filter-label">
                         <i class="fas fa-hd"></i> Качество
@@ -70,7 +66,6 @@
                     </div>
                 </div>
 
-                <!-- Dubbing Filter -->
                 <div class="filter-group">
                     <label class="filter-label">
                         <i class="fas fa-microphone"></i> Озвучка
@@ -84,7 +79,6 @@
                     </div>
                 </div>
 
-                <!-- Language Filter -->
                 <div class="filter-group">
                     <label class="filter-label">
                         <i class="fas fa-language"></i> Язык
@@ -97,7 +91,6 @@
                     </select>
                 </div>
 
-                <!-- Source Filter -->
                 <div class="filter-group">
                     <label class="filter-label">
                         <i class="fas fa-globe"></i> Источники
@@ -120,7 +113,6 @@
             </div>
         </section>
 
-        <!-- Manual Search -->
         <section class="section search-section">
             <h2 class="section-title">
                 <i class="fas fa-search"></i> Поиск
@@ -153,7 +145,6 @@
             </div>
         </section>
 
-        <!-- Results Section -->
         <section class="section results-section">
             <div class="section-header">
                 <h2 class="section-title">
@@ -197,7 +188,6 @@
             </div>
         </section>
 
-        <!-- Status Bar -->
         <footer class="app-footer">
             <div class="status-bar">
                 <span class="status-text" id="statusText">Готово</span>
@@ -209,7 +199,6 @@
         </footer>
     </div>
 
-    <!-- Templates -->
     <template id="movieTemplate">
         <div class="movie-card">
             <div class="movie-poster">
@@ -282,7 +271,6 @@
         </div>
     </template>
 
-    <!-- Scripts -->
     <script type="module" src="../utils/storage.js"></script>
     <script type="module" src="../utils/api.js"></script>
     <script type="module" src="../utils/constants.js"></script>

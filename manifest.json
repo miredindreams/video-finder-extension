@@ -46,7 +46,7 @@
     "*://*.animejoy.ru/*",
     "https://api.kinopoisk.dev/*",
     "https://www.omdbapi.com/*",
-    "https://your-backend-api.com/*"  // Замените на ваш сервер
+    "https://backend-api.com/*" 
   ],
   
   "content_scripts": [

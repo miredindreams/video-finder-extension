@@ -1,4 +1,3 @@
-// Парсер для Кинопоиска
 class KinopoiskParser {
   constructor() {
     this.name = 'kinopoisk';
@@ -31,8 +30,6 @@ class KinopoiskParser {
         duration: this.getDuration(),
         type: this.getType()
       };
-
-      // Валидация
       if (!movieInfo.title) {
         throw new Error('Название фильма не найдено');
       }
@@ -71,7 +68,6 @@ class KinopoiskParser {
   }
 
   getKinopoiskId() {
-    // Из URL: https://www.kinopoisk.ru/film/12345/
     const match = window.location.pathname.match(/\/film\/(\d+)/);
     return match ? parseInt(match[1]) : null;
   }
@@ -110,7 +106,6 @@ class KinopoiskParser {
     const element = document.querySelector(this.selectors.movieDuration);
     if (element) {
       const text = element.textContent.trim();
-      // Конвертация "2ч 15м" в минуты
       const hoursMatch = text.match(/(\d+)ч/);
       const minutesMatch = text.match(/(\d+)м/);
       
@@ -130,21 +125,17 @@ class KinopoiskParser {
       if (type.includes('video.movie')) return 'movie';
     }
     
-    // Определение по URL или другим признакам
     if (window.location.pathname.includes('/series/')) return 'series';
     if (window.location.pathname.includes('/film/')) return 'movie';
     
     return 'movie';
   }
 
-  // Дополнительные методы
   getActors() {
-    // Можно добавить парсинг актеров
     return [];
   }
 
   getDirectors() {
-    // Можно добавить парсинг режиссеров
     return [];
   }
 
@@ -153,7 +144,6 @@ class KinopoiskParser {
            window.location.pathname.includes('/series/');
   }
 
-  // Отправка данных в расширение
   sendToExtension() {
     if (this.isMoviePage()) {
       const movieData = this.parse();
@@ -165,7 +155,6 @@ class KinopoiskParser {
   }
 }
 
-// Автоматический запуск при загрузке страницы
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     const parser = new KinopoiskParser();
@@ -176,7 +165,6 @@ if (document.readyState === 'loading') {
   parser.sendToExtension();
 }
 
-// Экспорт для использования в content.js
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = KinopoiskParser;
 }

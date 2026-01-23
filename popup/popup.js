@@ -34,7 +34,6 @@ class VideoFinderPopup {
     }
 
     bindEvents() {
-        // Фильтры
         this.elements.quality.addEventListener('change', (e) => {
             this.filters.quality = e.target.value;
             this.saveFilters();
@@ -50,15 +49,12 @@ class VideoFinderPopup {
             this.saveFilters();
         });
 
-        // Кнопка поиска
         this.elements.searchBtn.addEventListener('click', () => this.search());
 
-        // Нажатие Enter в поле поиска
         this.elements.movieTitle.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.search();
         });
 
-        // Кнопка настроек
         this.elements.settingsBtn.addEventListener('click', () => this.openSettings());
     }
 
@@ -67,7 +63,6 @@ class VideoFinderPopup {
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
             
             if (tab.url.includes('kinopoisk') || tab.url.includes('imdb')) {
-                // Запрашиваем информацию о фильме с текущей страницы
                 const response = await chrome.tabs.sendMessage(tab.id, { 
                     action: 'GET_MOVIE_INFO' 
                 });
@@ -77,7 +72,6 @@ class VideoFinderPopup {
                     this.displayCurrentMovie();
                     this.updateStatus('Фильм найден', 'success');
                     
-                    // Заполняем поля для ручного поиска
                     if (this.currentMovie.title) {
                         this.elements.movieTitle.value = this.currentMovie.title;
                         if (this.currentMovie.year) {
@@ -150,7 +144,6 @@ class VideoFinderPopup {
                 filters: this.filters
             };
 
-            // Отправляем запрос к бэкенду
             const response = await this.callBackendAPI('search', searchData);
             
             if (response.success && response.data.length > 0) {
@@ -164,13 +157,11 @@ class VideoFinderPopup {
             console.error('Ошибка поиска:', error);
             this.updateStatus('Ошибка поиска', 'error');
             
-            // Для демо покажем тестовые данные
             this.displayDemoResults();
         }
     }
 
     async callBackendAPI(endpoint, data) {
-        // Временный URL для тестирования
         const API_URL = 'https://jsonplaceholder.typicode.com/posts';
         
         try {
@@ -188,7 +179,6 @@ class VideoFinderPopup {
 
             return await response.json();
         } catch (error) {
-            // В случае ошибки возвращаем демо-данные
             return {
                 success: true,
                 data: this.getDemoData()
@@ -246,7 +236,6 @@ class VideoFinderPopup {
             const clone = template.content.cloneNode(true);
             const card = clone.querySelector('.result-card');
 
-            // Заполняем данные
             card.querySelector('.source-badge').textContent = result.source;
             card.querySelector('.source-badge').setAttribute('data-source', result.source.toLowerCase());
             
@@ -254,7 +243,6 @@ class VideoFinderPopup {
             qualityBadge.textContent = `${result.quality}p`;
             qualityBadge.setAttribute('data-quality', result.quality);
             
-            // Цвета для качества
             const qualityColors = {
                 '480': '#ffd166',
                 '720': '#06d6a0',
@@ -270,7 +258,6 @@ class VideoFinderPopup {
             card.querySelector('.language').textContent = result.language;
             card.querySelector('.year').textContent = result.year;
 
-            // Кнопки действий
             const visitBtn = card.querySelector('.btn-visit');
             const copyBtn = card.querySelector('.btn-copy');
             const playBtn = card.querySelector('.play-btn');
@@ -320,7 +307,6 @@ class VideoFinderPopup {
         status.className = 'status';
         status.classList.add(`status-${type}`);
         
-        // Цвета статусов
         const colors = {
             success: '#06d6a0',
             error: '#ef476f',
@@ -331,7 +317,6 @@ class VideoFinderPopup {
         
         status.style.color = colors[type] || '#ffd166';
         
-        // Автоскрытие
         if (type !== 'loading') {
             setTimeout(() => {
                 status.textContent = 'Готово';
@@ -351,7 +336,6 @@ class VideoFinderPopup {
             if (result.videoFinderFilters) {
                 this.filters = result.videoFinderFilters;
                 
-                // Устанавливаем значения в селектах
                 if (this.filters.quality) {
                     this.elements.quality.value = this.filters.quality;
                 }
@@ -390,12 +374,10 @@ class VideoFinderPopup {
     }
 
     openSettings() {
-        // В будущем можно добавить настройки
         this.updateStatus('Настройки в разработке', 'info');
     }
 }
 
-// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
     new VideoFinderPopup();
 });

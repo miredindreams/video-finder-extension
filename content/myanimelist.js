@@ -25,15 +25,12 @@ class PageAnalyzer {
         let movieInfo = {};
         const url = window.location.href;
 
-        // Для Кинопоиска
         if (url.includes('kinopoisk.ru') || url.includes('kinopoisk.dev')) {
             movieInfo = this.parseKinopoisk();
         }
-        // Для IMDb
         else if (url.includes('imdb.com')) {
             movieInfo = this.parseIMDb();
         }
-        // Для MyAnimeList
         else if (url.includes('myanimelist.net')) {
             movieInfo = this.parseMyAnimeList();
         }
@@ -45,7 +42,6 @@ class PageAnalyzer {
         const movieInfo = {};
         
         try {
-            // Попробуем найти данные в JSON-LD
             const jsonLd = document.querySelector('script[type="application/ld+json"]');
             if (jsonLd) {
                 try {
@@ -56,12 +52,10 @@ class PageAnalyzer {
                     if (data.aggregateRating) {
                         movieInfo.rating = data.aggregateRating.ratingValue;
                     }
-                } catch (e) { /* Игнорируем ошибки парсинга JSON */ }
+                } catch (e) {}
             }
 
-            // Если JSON-LD не сработал, парсим DOM
             if (!movieInfo.title) {
-                // Название
                 const titleElement = document.querySelector('h1') || 
                                      document.querySelector('.styles_title') ||
                                      document.querySelector('[data-testid="hero-title-block__title"]');
@@ -69,7 +63,6 @@ class PageAnalyzer {
                     movieInfo.title = titleElement.textContent.trim();
                 }
 
-                // Год
                 const yearElement = document.querySelector('a[href*="/year/"]') ||
                                    document.querySelector('.styles_year') ||
                                    document.querySelector('[data-testid="hero-title-block__metadata"]');
@@ -78,7 +71,6 @@ class PageAnalyzer {
                     if (yearMatch) movieInfo.year = yearMatch[0];
                 }
 
-                // Постер
                 const posterElement = document.querySelector('img[alt*="постер"]') ||
                                      document.querySelector('.film-poster img') ||
                                      document.querySelector('[data-testid="hero-media__poster"] img');
@@ -86,14 +78,12 @@ class PageAnalyzer {
                     movieInfo.poster = posterElement.src;
                 }
 
-                // Рейтинг
                 const ratingElement = document.querySelector('.film-rating-value') ||
                                      document.querySelector('[data-testid="hero-rating-bar__aggregate-rating"]');
                 if (ratingElement) {
                     movieInfo.rating = ratingElement.textContent.trim();
                 }
 
-                // Определяем тип (фильм или сериал)
                 const breadcrumbs = document.querySelectorAll('.breadcrumbs__item');
                 const pageTitle = document.title.toLowerCase();
                 if (pageTitle.includes('сериал') || pageTitle.includes('сезон') || 
@@ -114,14 +104,12 @@ class PageAnalyzer {
         const movieInfo = {};
         
         try {
-            // Название
             const titleElement = document.querySelector('h1') ||
                                 document.querySelector('[data-testid="hero-title-block__title"]');
             if (titleElement) {
                 movieInfo.title = titleElement.textContent.trim();
             }
 
-            // Год
             const yearElement = document.querySelector('[data-testid="hero-title-block__metadata"]') ||
                                document.querySelector('.sc-8c396aa2-2');
             if (yearElement) {
@@ -129,21 +117,18 @@ class PageAnalyzer {
                 if (yearMatch) movieInfo.year = yearMatch[0];
             }
 
-            // Постер
             const posterElement = document.querySelector('img[alt*="Poster"]') ||
                                  document.querySelector('[data-testid="hero-media__poster"] img');
             if (posterElement) {
                 movieInfo.poster = posterElement.src;
             }
 
-            // Рейтинг
             const ratingElement = document.querySelector('[data-testid="hero-rating-bar__aggregate-rating"]') ||
                                  document.querySelector('.sc-7ab21ed2-1');
             if (ratingElement) {
                 movieInfo.rating = ratingElement.textContent.trim();
             }
 
-            // Тип
             const url = window.location.href;
             movieInfo.type = url.includes('/title/tt') ? 'movie' : 
                            url.includes('/tv/') ? 'series' : 'unknown';
@@ -159,33 +144,28 @@ class PageAnalyzer {
         const movieInfo = {};
         
         try {
-            // Название
             const titleElement = document.querySelector('h1.title-name') ||
                                 document.querySelector('.h1-title');
             if (titleElement) {
                 movieInfo.title = titleElement.textContent.trim();
             }
 
-            // Год
             const yearElement = document.querySelector('span[itemprop="startDate"]');
             if (yearElement) {
                 const yearMatch = yearElement.textContent.match(/\b(19|20)\d{2}\b/);
                 if (yearMatch) movieInfo.year = yearMatch[0];
             }
 
-            // Постер
             const posterElement = document.querySelector('img[itemprop="image"]');
             if (posterElement) {
                 movieInfo.poster = posterElement.src;
             }
 
-            // Рейтинг
             const ratingElement = document.querySelector('[itemprop="ratingValue"]');
             if (ratingElement) {
                 movieInfo.rating = ratingElement.textContent.trim();
             }
 
-            // Тип (аниме)
             movieInfo.type = 'anime';
             
         } catch (error) {
@@ -196,12 +176,10 @@ class PageAnalyzer {
     }
 
     injectUIElements() {
-        // Добавляем кнопку на страницу
         this.addFinderButton();
     }
 
     addFinderButton() {
-        // Проверяем, не добавлена ли кнопка уже
         if (document.getElementById('video-finder-button')) return;
 
         const button = document.createElement('button');
@@ -209,7 +187,6 @@ class PageAnalyzer {
         button.innerHTML = '<i class="fas fa-search"></i> Найти варианты';
         button.title = 'Найти альтернативные источники просмотра';
 
-        // Стили кнопки
         button.style.cssText = `
             position: fixed;
             bottom: 20px;
@@ -241,7 +218,6 @@ class PageAnalyzer {
         };
 
         button.onclick = () => {
-            // Открываем popup расширения
             chrome.runtime.sendMessage({ action: 'OPEN_POPUP' });
         };
 
@@ -249,5 +225,4 @@ class PageAnalyzer {
     }
 }
 
-// Запускаем анализатор страницы
 new PageAnalyzer();

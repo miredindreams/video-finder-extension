@@ -4,7 +4,6 @@ class Notifications {
     this.checkPermission();
   }
   
-  // Проверка разрешения на уведомления
   async checkPermission() {
     if (!('Notification' in window)) {
       console.log('Браузер не поддерживает уведомления');
@@ -19,7 +18,6 @@ class Notifications {
     return false;
   }
   
-  // Запрос разрешения
   async requestPermission() {
     if (!('Notification' in window)) {
       return false;
@@ -35,15 +33,12 @@ class Notifications {
     }
   }
   
-  // Показ уведомления
   async show(title, options = {}) {
-    // Проверяем настройки пользователя
     const settings = await this.getSettings();
     if (!settings.showNotifications) {
       return null;
     }
     
-    // Проверяем разрешение
     if (!this.permissionGranted && !await this.requestPermission()) {
       return null;
     }
@@ -61,7 +56,6 @@ class Notifications {
     try {
       const notification = new Notification(title, notificationOptions);
       
-      // Обработчик клика по уведомлению
       notification.onclick = () => {
         window.focus();
         notification.close();
@@ -71,7 +65,6 @@ class Notifications {
         }
       };
       
-      // Автоматическое закрытие через 5 секунд
       if (!notificationOptions.requireInteraction) {
         setTimeout(() => notification.close(), 5000);
       }
@@ -80,7 +73,6 @@ class Notifications {
     } catch (error) {
       console.error('Ошибка показа уведомления:', error);
       
-      // Fallback: показываем alert
       if (settings.fallbackAlerts) {
         alert(title);
       }
@@ -89,7 +81,6 @@ class Notifications {
     }
   }
   
-  // Уведомление о найденных источниках
   async showSearchResults(movieTitle, count) {
     return this.show('Video Finder: Найдены варианты', {
       body: `Для "${movieTitle}" найдено ${count} вариантов просмотра`,
@@ -100,7 +91,6 @@ class Notifications {
     });
   }
   
-  // Уведомление об ошибке
   async showError(message) {
     return this.show('Video Finder: Ошибка', {
       body: message,
@@ -110,7 +100,6 @@ class Notifications {
     });
   }
   
-  // Уведомление о копировании ссылки
   async showCopiedNotification() {
     return this.show('Ссылка скопирована', {
       body: 'Ссылка успешно скопирована в буфер обмена',
@@ -119,7 +108,6 @@ class Notifications {
     });
   }
   
-  // Уведомление об обновлении
   async showUpdateNotification(version) {
     return this.show('Video Finder обновлен', {
       body: `Установлена версия ${version}. Нажмите для просмотра изменений.`,
@@ -132,7 +120,6 @@ class Notifications {
     });
   }
   
-  // Уведомление о сетевом статусе
   async showNetworkStatus(isOnline) {
     if (!isOnline) {
       return this.show('Video Finder: Нет соединения', {
@@ -144,7 +131,6 @@ class Notifications {
     }
   }
   
-  // Получение настроек уведомлений
   async getSettings() {
     return new Promise((resolve) => {
       chrome.storage.local.get(['notificationSettings'], (result) => {
@@ -168,7 +154,6 @@ class Notifications {
     });
   }
   
-  // Сохранение настроек уведомлений
   async saveSettings(settings) {
     return new Promise((resolve) => {
       chrome.storage.local.set({ notificationSettings: settings }, () => {
@@ -177,14 +162,12 @@ class Notifications {
     });
   }
   
-  // Проверка поддержки браузером
   static isSupported() {
     return 'Notification' in window && 
            'serviceWorker' in navigator &&
            'PushManager' in window;
   }
   
-  // Подписка на push-уведомления
   async subscribeToPush() {
     if (!Notifications.isSupported()) {
       return null;
@@ -204,7 +187,7 @@ class Notifications {
     }
   }
   
-  // Вспомогательная функция для конвертации ключа
+
   urlBase64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
@@ -222,6 +205,5 @@ class Notifications {
   }
 }
 
-// Экспортируем синглтон
 const notifications = new Notifications();
 export default notifications;

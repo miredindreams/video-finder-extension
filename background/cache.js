@@ -1,14 +1,9 @@
-// Фоновый сервис-воркер для расширения
-
-// Кэш для результатов поиска
 const searchCache = new Map();
-
-// Обработчик сообщений от popup и content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.action) {
         case 'SEARCH_MOVIE':
             handleMovieSearch(message.data, sendResponse);
-            return true; // Указываем, что ответ будет асинхронным
+            return true;
             
         case 'OPEN_POPUP':
             chrome.action.openPopup();
@@ -24,20 +19,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
-// Обработчик установки расширения
 chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
-        // Первая установка
         initializeExtension();
     }
     
-    // Создаем контекстное меню
     createContextMenu();
 });
 
-// Инициализация расширения
 function initializeExtension() {
-    // Устанавливаем настройки по умолчанию
     const defaultSettings = {
         filters: {
             quality: '720',
@@ -54,13 +44,11 @@ function initializeExtension() {
         firstRun: true 
     });
     
-    // Показываем страницу приветствия
     chrome.tabs.create({
         url: chrome.runtime.getURL('welcome.html')
     });
 }
 
-// Создание контекстного меню
 function createContextMenu() {
     chrome.contextMenus.create({
         id: 'search-movie',
@@ -68,10 +56,8 @@ function createContextMenu() {
         contexts: ['selection']
     });
     
-    // Обработчик клика по меню
     chrome.contextMenus.onClicked.addListener((info, tab) => {
         if (info.menuItemId === 'search-movie') {
-            // Открываем popup с выбранным текстом
             chrome.storage.local.set({
                 manualSearchText: info.selectionText
             }, () => {
@@ -81,12 +67,10 @@ function createContextMenu() {
     });
 }
 
-// Обработка поиска фильма
 async function handleMovieSearch(searchData, sendResponse) {
     try {
         const cacheKey = JSON.stringify(searchData);
         
-        // Проверяем кэш
         if (searchCache.has(cacheKey)) {
             const cachedData = searchCache.get(cacheKey);
             if (Date.now() - cachedData.timestamp < 5 * 60 * 1000) { // 5 минут
@@ -95,10 +79,8 @@ async function handleMovieSearch(searchData, sendResponse) {
             }
         }
         
-        // Получаем настройки
         const settings = await getSettings();
         
-        // Ищем фильм через публичные API
         const movieId = await findMovieId(searchData);
         
         if (!movieId) {
@@ -109,10 +91,8 @@ async function handleMovieSearch(searchData, sendResponse) {
             return;
         }
         
-        // Ищем источники
         const sources = await findSources(movieId, searchData.filters, settings.sources);
-        
-        // Кэшируем результаты
+
         searchCache.set(cacheKey, {
             timestamp: Date.now(),
             results: sources
@@ -129,11 +109,9 @@ async function handleMovieSearch(searchData, sendResponse) {
     }
 }
 
-// Поиск ID фильма через публичные API
 async function findMovieId(searchData) {
     const { title, year } = searchData;
-    
-    // Пробуем разные API по очереди
+
     const apis = [
         tryKinopoiskAPI,
         tryOMDbAPI,
@@ -152,7 +130,6 @@ async function findMovieId(searchData) {
     return null;
 }
 
-// Поиск через Кинопоиск API
 async function tryKinopoiskAPI(title, year) {
     const apiKey = await getApiKey('kinopoisk');
     if (!apiKey) return null;
@@ -181,7 +158,6 @@ async function tryKinopoiskAPI(title, year) {
     return null;
 }
 
-// Поиск через OMDb API
 async function tryOMDbAPI(title, year) {
     const apiKey = await getApiKey('omdb');
     if (!apiKey) return null;
@@ -203,7 +179,6 @@ async function tryOMDbAPI(title, year) {
     return null;
 }
 
-// Поиск через IMDb API
 async function tryIMDbAPI(title, year) {
     const apiKey = await getApiKey('imdb');
     if (!apiKey) return null;
@@ -224,15 +199,10 @@ async function tryIMDbAPI(title, year) {
     return null;
 }
 
-// Поиск источников для фильма
 async function findSources(movieId, filters, enabledSources) {
-    // В реальном приложении здесь был бы запрос к вашему серверу
-    // Для демо возвращаем тестовые данные
-    
     return getDemoSources(movieId, filters);
 }
 
-// Демо-данные
 function getDemoSources(movieId, filters) {
     const sources = [
         {
@@ -263,7 +233,6 @@ function getDemoSources(movieId, filters) {
         }
     ];
     
-    // Фильтруем по качеству если указано
     if (filters.quality) {
         return sources.filter(s => s.quality === filters.quality);
     }
@@ -271,26 +240,22 @@ function getDemoSources(movieId, filters) {
     return sources;
 }
 
-// Получение API ключей
 async function getApiKey(service) {
     const result = await chrome.storage.local.get(['apiKeys']);
     return result.apiKeys?.[service];
 }
 
-// Получение настроек
 async function getSettings() {
     const result = await chrome.storage.local.get(['videoFinderSettings']);
     return result.videoFinderSettings || {};
 }
 
-// Обработчик запроса API ключа
 function handleApiKeyRequest(sendResponse) {
     chrome.storage.local.get(['apiKeys'], (result) => {
         sendResponse({ keys: result.apiKeys || {} });
     });
 }
 
-// Очистка кэша раз в час
 setInterval(() => {
     const now = Date.now();
     for (const [key, value] of searchCache.entries()) {
@@ -300,18 +265,15 @@ setInterval(() => {
     }
 }, 60 * 60 * 1000);
 
-// Обработчик обновления вкладок
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    // Если страница загружена и это поддерживаемый сайт
     if (changeInfo.status === 'complete' && 
         (tab.url.includes('kinopoisk') || tab.url.includes('imdb') || tab.url.includes('myanimelist'))) {
         
-        // Отправляем сообщение content script для обновления
         chrome.tabs.sendMessage(tabId, {
             action: 'PAGE_UPDATED',
             url: tab.url
         }).catch(() => {
-            // Content script может быть не загружен, это нормально
+
         });
     }
 });

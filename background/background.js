@@ -1,4 +1,3 @@
-// Service Worker для расширения
 import API from '../utils/api.js';
 import Storage from '../utils/storage.js';
 
@@ -17,40 +16,33 @@ class BackgroundService {
   }
 
   setupListeners() {
-    // Обработчик сообщений от content scripts и popup
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       this.handleMessage(message, sender, sendResponse);
-      return true; // Для асинхронного ответа
+      return true;
     });
 
-    // Обработчик установки/обновления расширения
     chrome.runtime.onInstalled.addListener((details) => {
       this.handleInstall(details);
     });
 
-    // Обработчик изменения вкладок
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       this.handleTabUpdate(tabId, changeInfo, tab);
     });
 
-    // Обработчик закрытия вкладок
     chrome.tabs.onRemoved.addListener((tabId) => {
       this.handleTabRemoved(tabId);
     });
   }
 
   setupAlarms() {
-    // Очистка кэша каждые 6 часов
     chrome.alarms.create('clearCache', {
       periodInMinutes: 360
     });
 
-    // Проверка соединения каждые 5 минут
     chrome.alarms.create('checkConnection', {
       periodInMinutes: 5
     });
 
-    // Обработчик будильников
     chrome.alarms.onAlarm.addListener((alarm) => {
       this.handleAlarm(alarm);
     });
@@ -142,17 +134,14 @@ class BackgroundService {
       }
     };
 
-    // Установка настроек по умолчанию
     await this.storage.saveSettings(defaultSettings);
 
-    // Показ страницы приветствия для новых установок
     if (details.reason === 'install') {
       chrome.tabs.create({
         url: chrome.runtime.getURL('welcome.html')
       });
     }
 
-    // Создание контекстного меню
     this.createContextMenu();
   }
 
@@ -171,7 +160,6 @@ class BackgroundService {
       });
     });
 
-    // Обработчик кликов по меню
     chrome.contextMenus.onClicked.addListener((info, tab) => {
       this.handleContextMenuClick(info, tab);
     });
@@ -181,10 +169,8 @@ class BackgroundService {
     switch (info.menuItemId) {
       case 'search-movie':
       case 'search-title':
-        // Сохраняем текст для поиска
         await this.storage.set('quickSearchText', info.selectionText);
         
-        // Открываем popup
         chrome.action.openPopup();
         break;
     }
@@ -192,7 +178,6 @@ class BackgroundService {
 
   async handleTabUpdate(tabId, changeInfo, tab) {
     if (changeInfo.status === 'complete' && tab.url) {
-      // Проверяем, поддерживается ли сайт
       const supportedSites = [
         'kinopoisk.ru',
         'kinopoisk.dev',
@@ -205,19 +190,16 @@ class BackgroundService {
       );
 
       if (isSupported) {
-        // Отправляем сообщение content script
         chrome.tabs.sendMessage(tabId, {
           action: 'PAGE_LOADED',
           url: tab.url
         }).catch(() => {
-          // Content script может быть не загружен
         });
       }
     }
   }
 
   handleTabRemoved(tabId) {
-    // Очищаем связанные данные
     this.connections.delete(tabId);
   }
 
@@ -238,13 +220,11 @@ class BackgroundService {
       const health = await this.api.getHealth();
       const isOnline = health && health.status === 'OK';
       
-      // Сохраняем статус
       await this.storage.set('connectionStatus', {
         isOnline,
         lastChecked: Date.now()
       });
 
-      // Отправляем уведомление если статус изменился
       this.notifyConnectionChange(isOnline);
 
       return isOnline;
@@ -273,10 +253,8 @@ class BackgroundService {
   }
 
   async reportIssue(issueData) {
-    // Здесь можно отправлять отчеты об ошибках на сервер
     console.log('Отчет об ошибке:', issueData);
     
-    // Сохраняем локально для отладки
     const issues = await this.storage.get('reportedIssues') || [];
     issues.push({
       ...issueData,
@@ -284,10 +262,9 @@ class BackgroundService {
       version: chrome.runtime.getManifest().version
     });
     
-    await this.storage.set('reportedIssues', issues.slice(-50)); // Храним последние 50
+    await this.storage.set('reportedIssues', issues.slice(-50));
   }
 
-  // Дополнительные методы
   async getStats() {
     const history = await this.storage.getSearchHistory();
     const settings = await this.storage.getSettings();
@@ -306,10 +283,8 @@ class BackgroundService {
   }
 }
 
-// Инициализация
 const backgroundService = new BackgroundService();
 
-// Экспорт для тестов
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = BackgroundService;
 }

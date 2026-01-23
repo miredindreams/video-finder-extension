@@ -8,7 +8,6 @@ class VideoFinderAPI {
     async searchMovie(searchParams) {
         const cacheKey = JSON.stringify(searchParams);
         
-        // Проверяем кэш
         if (this.cache.has(cacheKey)) {
             const cached = this.cache.get(cacheKey);
             if (Date.now() - cached.timestamp < this.cacheDuration) {
@@ -31,8 +30,7 @@ class VideoFinderAPI {
             }
             
             const data = await response.json();
-            
-            // Кэшируем результат
+
             this.cache.set(cacheKey, {
                 timestamp: Date.now(),
                 data: data
@@ -43,7 +41,6 @@ class VideoFinderAPI {
         } catch (error) {
             console.error('API Error:', error);
             
-            // Возвращаем демо-данные если API недоступен
             return this.getFallbackData(searchParams);
         }
     }
@@ -64,7 +61,7 @@ class VideoFinderAPI {
             return await response.json();
         } catch (error) {
             console.error('Error fetching sources:', error);
-            return ['filmix', 'hdrezka', 'kinopub']; // Источники по умолчанию
+            return ['filmix', 'hdrezka', 'kinopub'];
         }
     }
 
@@ -90,7 +87,6 @@ class VideoFinderAPI {
     }
 
     getFallbackData(searchParams) {
-        // Демо-данные для офлайн режима или при ошибке API
         return {
             success: true,
             data: [
@@ -130,7 +126,6 @@ class VideoFinderAPI {
         return map[lang] || 'Русский';
     }
 
-    // Очистка старого кэша
     cleanupCache() {
         const now = Date.now();
         for (const [key, value] of this.cache.entries()) {
@@ -141,8 +136,7 @@ class VideoFinderAPI {
     }
 }
 
-// Экспортируем синглтон
 const videoFinderAPI = new VideoFinderAPI();
-setInterval(() => videoFinderAPI.cleanupCache(), 60 * 1000); // Очистка каждую минуту
+setInterval(() => videoFinderAPI.cleanupCache(), 60 * 1000);
 
 export default videoFinderAPI;
